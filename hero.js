@@ -1,13 +1,13 @@
 
-let heroStand= new Sprite("images/heros/blue/alienBlue_stand.png")
-let heroJump= new Sprite("images/heros/blue/alienBlue_jump.png")
+let heroStand = new Sprite("images/alienBlue_stand.png")
+let heroJump = new Sprite("images/alienBlue_jump.png")
 
 class Hero {
   constructor() {
     this.x = GRIDSIZE
     this.y = GRIDSIZE
     this.width = GRIDSIZE
-    this.height = GRIDSIZE*2
+    this.height = GRIDSIZE * 2
 
     this.dy = 0
     this.airborne = true
@@ -16,24 +16,38 @@ class Hero {
     if (this.airborne) {
       return
     }
-    this.dy = - GRIDSIZE/2
+    this.dy = - GRIDSIZE / 2
     this.airborne = true
   }
   moveLeft() {
-    this.x = this.x - GRIDSIZE/10
+    this.x = this.x - GRIDSIZE / 10
   }
   moveRight() {
-    this.x = this.x + GRIDSIZE/10
+    this.x = this.x + GRIDSIZE / 10
   }
-  step() {
+  step(platforms) {
     // acceleration falling speed
-    this.dy = this.dy + GRIDSIZE/60
+    this.dy = this.dy + GRIDSIZE / 60
     if (this.dy > GRIDSIZE) {
       this.dy = GRIDSIZE - 1
     }
 
     // apply speed to position
     this.y = this.y + this.dy
+
+    platforms.forEach(p=>{
+      let isInsideY = this.y>p.y && this.y<p.y +p.height 
+      let isInsideX = this.x>p.x && this.x<p.x +p.width 
+      if(isInsideX && isInsideY){
+        this.y = p.y
+        this.dy = 0
+        this.airborne = false
+      }
+      })
+
+
+      
+    
 
     // check if hero is in the ground
     if (this.y > CANVAS.height) {
@@ -54,7 +68,7 @@ class Hero {
     CTX.fill()
 
     let imageToDraw = heroStand
-    if(this.airborne){
+    if (this.airborne) {
       imageToDraw = heroJump
     }
     imageToDraw.draw(
